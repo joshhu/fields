@@ -1,0 +1,18 @@
+[project]
+name = "fields"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "edge-tts>=7.2.8",
+    "manim>=0.21.0",
+    "numpy>=2.5.3",
+    "pillow>=12.3.0",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
