@@ -10,11 +10,75 @@ BREAK = set("，。：；！？、")
 MAX_SUB = 18  # max CJK chars per subtitle line
 
 
-def parse_visual(v: str) -> tuple[str, str, float]:
-    """'img:newton*1.5' -> ('img', 'newton', 1.5)."""
+def parse_visual(v: str | dict) -> tuple[str, str, float]:
+    """'img:newton*1.5' -> ('img', 'newton', 1.5). Segment suffix '@a-b' is dropped."""
+    if isinstance(v, dict):
+        v = v["v"]
     kind, _, rest = v.partition(":")
     name, _, w = rest.partition("*")
+    name = name.split("@")[0]
     return kind, name, float(w) if w else 1.0
+
+
+def parse_item(v: str | dict) -> dict:
+    """Full visual spec: kind, name, weight, segment (a, b) or None, anchor phrase or None."""
+    anchor = v.get("at") if isinstance(v, dict) else None
+    spec = v["v"] if isinstance(v, dict) else v
+    kind, _, rest = spec.partition(":")
+    body, _, w = rest.partition("*")
+    name, _, seg = body.partition("@")
+    segment = None
+    if seg:
+        a, _, b = seg.partition("-")
+        segment = (float(a), float(b) if b else None)
+    return {"kind": kind, "name": name, "weight": float(w) if w else 1.0, "segment": segment, "at": anchor}
+
+
+def anchor_time(text: str, times: list, phrase: str, start_pos: int = 0) -> tuple[float, int] | None:
+    """Time (scene-relative, without LEAD) at which `phrase` starts being spoken."""
+    idx = text.find(phrase, start_pos)
+    if idx < 0:
+        idx = text.find(phrase)
+    if idx < 0:
+        return None
+    for t in times[idx:idx + len(phrase) + 6]:
+        if t:
+            return t[0], idx + len(phrase)
+    return None
+
+
+def plan_cuts(total: float, weights: list[float], anchors: list[float | None],
+              snap_points: list[float] | None = None, min_len: float = 2.5) -> list[float]:
+    """Durations for visuals; anchored items start at their anchor time, others fill evenly."""
+    n = len(weights)
+    fixed = [0.0] + [None] * (n - 1)
+    for i in range(1, n):
+        if anchors[i] is not None:
+            fixed[i] = anchors[i]
+    starts: list[float] = [0.0] * n
+    i = 0
+    while i < n:
+        j = i + 1
+        while j < n and fixed[j] is None:
+            j += 1
+        seg_start = fixed[i]
+        seg_end = fixed[j] if j < n else total
+        durs = allocate(seg_end - seg_start, weights[i:j],
+                        [p - seg_start for p in (snap_points or []) if seg_start < p < seg_end],
+                        min_len=min(min_len, (seg_end - seg_start) / (j - i)))
+        t = seg_start
+        for k, d in zip(range(i, j), durs):
+            starts[k] = t
+            t += d
+        i = j
+    # enforce monotonic + min length
+    for k in range(1, n):
+        starts[k] = max(starts[k], starts[k - 1] + min_len)
+    for k in range(n - 1, 0, -1):
+        end = starts[k + 1] if k + 1 < n else total
+        starts[k] = min(starts[k], end - min_len)
+    bounds = starts + [total]
+    return [b - a for a, b in zip(bounds, bounds[1:])]
 
 
 def pauses(words: list[dict], min_gap: float = 0.18) -> list[float]:

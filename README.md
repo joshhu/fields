@@ -27,6 +27,8 @@
 uv sync
 uv run python pipeline/tts.py            # 1. 產生旁白 build/audio/*.mp3 + 時間碼
 uv run python pipeline/fetch_media.py    # 2. 下載圖片、影片、配樂到 assets/
+uv run python pipeline/fetch_more_a.py   #    第二批素材（第 0–8 章）
+uv run python pipeline/fetch_more_b.py   #    第二批素材（第 9–17 章）
 cd anims && for f in [a-z]*.py; do n=${f%.py}; [ "$n" = style ] || [ "$n" = g2util ] || ./render.sh $n; done; cd ..
                                          # 3. 渲染動畫到 assets/anim/
 uv run python pipeline/compose.py        # 4. 合成 output/fields.mp4
@@ -34,13 +36,18 @@ uv run python pipeline/compose.py        # 4. 合成 output/fields.mp4
 
 只重做某一場：`uv run python pipeline/compose.py --only s03_maxwell`。片段有快取，改了素材才會重算。
 
+看鏡頭表、檢查有沒有過長的鏡頭：`uv run python pipeline/compose.py --plan`。
+全片約 250 個鏡頭；每個畫面在 `script/shots.yaml` 用 `at:` 綁定到旁白片語，念到那句就切畫面，
+圖片最長 7.5 秒、影片 9.5 秒、動畫片段 14 秒（`tests/test_pipeline.py` 會檢查）。
+
 ## 專案結構
 
 ```
-script/scenes.yaml     分場稿：旁白、章節標題、每場的視覺清單
+script/scenes.yaml     分場稿：旁白、章節標題
+script/shots.yaml      鏡頭表：每場的畫面、片段與對應的旁白片語
 script/anim_spec.md    動畫規格與風格指南
 pipeline/tts.py        旁白 TTS
-pipeline/fetch_media.py 素材下載（固定來源，可重跑）
+pipeline/fetch_media.py 素材下載（固定來源，可重跑；fetch_more_a/b.py 為第二批）
 pipeline/timeline.py   時間軸、畫面切點對齊停頓、字幕切句（純函式）
 pipeline/compose.py    算圖與合成
 anims/                 Manim 動畫原始碼（style.py 為共用配色）
@@ -54,7 +61,7 @@ uv run pytest -q
 ```
 
 - `test_timeline.py`：時間分配、停頓對齊、字幕切句等單元測試
-- `test_pipeline.py`：分場稿引用的素材都存在、出處完整、時間軸與配音長度一致；成品存在時再驗證 1920×1080、h264/aac、長度 19–22 分鐘、字幕數量
+- `test_pipeline.py`：分場稿引用的素材都存在、出處完整、時間軸與配音長度一致、沒有過長的鏡頭；成品存在時再驗證 1920×1080、h264/aac、長度 19–22 分鐘、字幕數量
 
 ## 授權
 

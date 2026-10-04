@@ -1,0 +1,291 @@
+# 鏡頭表：每場的畫面清單（覆蓋 scenes.yaml 裡的 visuals）
+# 寫法：
+#   kind:name            圖片 img / 影片 vid / 動畫 anim
+#   kind:name@a-b        只用素材的第 a 到 b 秒（動畫、影片）
+#   {v: ..., at: 片語}    旁白念到「片語」時切到這個畫面；沒寫 at 的畫面平均分配在前後錨點之間
+# 原則：圖片 ≤ 7 秒、影片 ≤ 9.5 秒、動畫片段 ≤ 14 秒。
+
+s00_intro:
+  - anim:title@0-12
+  - {v: img:bubble_chamber, at: 從粒子物理}
+  - {v: vid:galaxy@0-10, at: 到廣義相對論}
+  - {v: img:superconductor, at: 從凝態物理}
+  - {v: anim:quantum_field@0-12, at: 量子場論是標準模型}
+  - {v: anim:spacetime@0-10, at: 廣義相對論講的是}
+  - {v: vid:superconductor_vid, at: 就連超導}
+  - {v: img:newton_1702, at: 可是往前倒推}
+  - {v: vid:galaxy@10-18, at: 那時候大家眼中}
+  - {v: vid:newtons_cradle, at: 硬梆梆}
+  - {v: anim:action_at_distance@0-10, at: 力就是粒子之間}
+  - {v: anim:title@12-24, at: 這三百年裡}
+  - {v: anim:quantum_field@12-24, at: 甚至把場當成}
+  - {v: img:principia, at: 一切，要從牛頓}
+
+s01_newton:
+  - img:newton
+  - {v: img:apple_tree, at: 從蘋果落地}
+  - {v: vid:earth_orbit@0-12, at: 到行星公轉}
+  - {v: img:tides, at: 從潮汐漲落}
+  - {v: img:halley_comet, at: 到彗星回歸}
+  - {v: vid:sun@0-10, at: 天上地下}
+  - {v: anim:action_at_distance@0-12, at: 但這個封神}
+  - {v: vid:galaxy@12-22, at: 兩個物體就算}
+  - {v: anim:action_at_distance@12-29, at: 太陽這邊一動}
+  - {v: vid:newtons_cradle@4-14, at: 這就好比}
+  - {v: vid:earth_orbit@12-25, at: 但在牛頓力學裡}
+  - {v: img:newton_1702, at: 牛頓在一六九三年}
+  - {v: img:principia, at: 一個物體不需要}
+  - {v: img:leibniz, at: 同時代的萊布尼茲}
+  - {v: vid:galaxy@22-32, at: 問題是，牛頓}
+  - {v: vid:sun@10-20, at: 而萬有引力預測}
+  - {v: img:newton, at: 於是大家抱著}
+  - {v: anim:field_lines@0-10, at: 現在回頭看}
+
+s02_faraday:
+  - img:faraday
+  - {v: img:faraday_lab, at: 他沒受過正規}
+  - {v: img:faraday_ring, at: 別人做實驗}
+  - {v: img:royal_institution, at: 一八三零年代}
+  - {v: vid:iron_filings_vid, at: 把鐵屑撒在}
+  - {v: img:iron_filings, at: 鐵屑就會排成}
+  - {v: anim:field_lines@0-10, at: 法拉第盯著}
+  - {v: anim:field_lines@10-23, at: 而是真實存在}
+  - {v: vid:water_ripples, at: 而是先改變}
+  - {v: img:ampere, at: 當時的主流}
+  - {v: img:faraday_photo, at: 很多人覺得他}
+  - {v: vid:galaxy@32-42, at: 他甚至猜測}
+  - {v: anim:maxwell_eq@0-8, at: 只是他缺少}
+
+s03_maxwell:
+  - img:maxwell
+  - {v: img:maxwell_young, at: 他把法拉第腦中}
+  - {v: img:maxwell_paper, at: 一八六五年}
+  - {v: img:heaviside, at: 黑維塞}
+  - {v: anim:maxwell_eq@0-12, at: 四條方程式}
+  - {v: img:lightning, at: 這組方程一口氣}
+  - {v: img:prism, at: 三種看似}
+  - {v: anim:maxwell_eq@12-25, at: 更重要的是}
+  - {v: anim:em_wave@12-22.4, at: 電荷A動一下}
+  - {v: vid:water_ripples, at: 擾動像水波}
+  - {v: anim:em_wave@0-12, at: 在馬克士威的理論裡}
+  - {v: vid:sun@20-30, at: 就算空間裡}
+  - {v: img:antenna, at: 場，也是一種物質}
+  - {v: img:hertz, at: 一八八七年}
+  - {v: img:hertz_apparatus, at: 測到的傳播速度}
+
+s04_ether:
+  - vid:ocean@0-8
+  - {v: img:ocean_waves, at: 水波靠水}
+  - {v: vid:earth@0-10, at: 光也得靠}
+  - {v: img:michelson, at: 為了測出地球}
+  - {v: img:morley, at: 和莫立}
+  - {v: anim:michelson, at: 做了那個著名}
+  - {v: img:michelson_morley, at: 完全找不到}
+  - {v: img:michelson, at: 很多人覺得一定是}
+  - {v: img:einstein_1905, at: 直到一九零五年}
+  - {v: img:annalen_1905, at: 電磁波不需要介質}
+  - {v: vid:sun@30-40, at: 狹義相對論確立}
+  - {v: img:hubble_deep, at: 它和粒子一樣}
+
+s05_gr:
+  - img:einstein
+  - {v: anim:spacetime@0-6, at: 他把時空本身}
+  - {v: img:newton, at: 在牛頓的世界觀}
+  - {v: vid:earth_orbit@0-12, at: 所有物理事件}
+  - {v: img:einstein_1921, at: 廣義相對論卻}
+  - {v: anim:spacetime@0-12, at: 物質的能量和動量}
+  - {v: img:lensing, at: 我們感受到的引力}
+  - {v: anim:spacetime@3-15, at: 就像在彈簧床}
+  - {v: vid:black_hole@0-10, at: 看起來像是鉛球}
+  - {v: anim:spacetime@12-25, at: 描述時空曲率}
+  - {v: img:gr_paper, at: 你看，名字}
+  - {v: anim:maxwell_eq@6-18, at: 它和馬克士威方程組}
+  - {v: img:ligo, at: 一個場，在時空中}
+  - {v: img:einstein_old, at: 一九一五年之後}
+  - {v: vid:black_hole@12-24, at: 想把電磁場}
+  - {v: img:eddington, at: 他最後失敗了}
+  - {v: img:einstein, at: 但這件事本身}
+
+s06_rqm:
+  - img:solvay_1927
+  - {v: img:bubble_chamber, at: 為什麼最後}
+  - {v: img:klein, at: 很多人以為}
+  - {v: img:schrodinger, at: 一九二五年底}
+  - {v: img:hydrogen_spectrum, at: 但它預言}
+  - {v: anim:harmonic_modes@0-9, at: 薛丁格以為}
+  - {v: anim:negative_energy@0-6, at: 因為它會出現}
+  - {v: img:dirac, at: 一九二八年}
+  - {v: anim:negative_energy@0-12, at: 卻又冒出了}
+  - {v: anim:negative_energy@12-26, at: 狄拉克提出}
+  - {v: vid:cloud_chamber@0-8, at: 很多人覺得這是}
+  - {v: img:anderson, at: 直到一九三二年}
+  - {v: img:positron, at: 發現了正電子}
+
+s07_qft_birth:
+  - anim:pair_creation@0-9
+  - {v: anim:pair_creation@8-17.5, at: 光子也能變成}
+  - {v: vid:cloud_chamber@8-16, at: 粒子數不守恆}
+  - {v: img:schrodinger, at: 用單一粒子}
+  - {v: img:positron, at: 單粒子的相對論}
+  - {v: anim:quantum_field@0-12, at: 問題逼到}
+  - {v: img:heisenberg, at: 其實早在}
+  - img:born
+  - img:jordan
+  - {v: anim:harmonic_modes, at: 模式的能量}
+  - {v: img:solvay_1927, at: 這就是量子場論}
+  - {v: img:dirac, at: 一九二七年}
+  - {v: anim:feynman_diagram@3-11, at: 也就是量子電動力學}
+
+s08_field_ocean:
+  - anim:field_ocean@0-10
+  - {v: vid:newtons_cradle@8-18, at: 古典物理中}
+  - {v: anim:quantum_field@0-12, at: 在量子場論裡}
+  - {v: anim:standard_model@0-12, at: 每一種粒子}
+  - {v: anim:quantum_field@12-24, at: 我們看到的粒子}
+  - {v: vid:ocean@0-10, at: 打個比方}
+  - {v: img:ocean_waves, at: 粒子是海面上}
+  - {v: anim:field_ocean@8-21, at: 浪花有高有低}
+  - {v: vid:ocean@10-20, at: 但不管浪花}
+  - {v: anim:beta_decay@0-10, at: 在貝他衰變中}
+  - {v: anim:beta_decay@9-21, at: 而是中子場}
+  - {v: img:fermi, at: 一九三四年}
+  - {v: vid:cloud_chamber@16-26, at: 大家終於意識到}
+
+s09_renorm:
+  - anim:quantum_field@0-6
+  - {v: img:pauli, at: 一九三零到四零年代}
+  - {v: anim:infinity@0-14, at: 電子和自己的}
+  - {v: anim:feynman_diagram@10-22, at: 真空極化}
+  - {v: anim:infinity@6-14, at: 一個算出來}
+  - {v: img:dirac, at: 很多人懷疑}
+  - {v: img:bethe, at: 直到一九四七}
+  - img:schwinger
+  - img:feynman
+  - img:tomonaga
+  - {v: anim:infinity@14-22.6, at: 核心想法}
+  - {v: vid:lhc@0-8, at: 我們測到的質量}
+  - {v: anim:infinity@16-22.6, at: 只要把無窮大}
+  - {v: img:shelter_island, at: 聽起來像}
+  - {v: img:feynman, at: 費曼也在}
+  - {v: anim:feynman_diagram@3-15, at: 每一張圖對應}
+  - {v: img:feynman_van, at: 要注意}
+  - {v: anim:quantum_field@4-16, at: 它的底層}
+  - {v: img:g2_ring, at: 量子電動力學因此}
+  - {v: img:nobel_medal, at: 電子異常磁矩}
+
+s10_wilson:
+  - anim:infinity@14-22.6
+  - {v: img:wilson, at: 肯尼斯．威爾森}
+  - {v: anim:rg_flow@0-12, at: 威爾森指出}
+  - {v: anim:block_spin@0-12, at: 重整化本質上}
+  - {v: vid:earth@10-20, at: 就像遠遠看}
+  - {v: anim:block_spin@12-25, at: 低能物理就是}
+  - {v: img:critical_opalescence, at: 這也解釋了}
+  - {v: img:magnetic_domains, at: 流體、磁鐵}
+  - {v: anim:rg_flow@12-25, at: 在相變點附近}
+  - {v: anim:nested_theories@0-12, at: 這帶來一個}
+  - {v: anim:nested_theories@12-25, at: 我們用的每一個}
+  - {v: img:lhc_detector, at: 標準模型在加速器}
+  - {v: vid:lhc@18-28, at: 但到了普朗克尺度}
+  - {v: img:newton, at: 就像牛頓力學}
+  - {v: img:wilson_alt, at: 威爾森因此}
+  - {v: img:nobel_medal, at: 他讓場論從}
+
+s11_yang_mills:
+  - anim:feynman_diagram@0-10
+  - {v: vid:lhc@8-18, at: 但這兩種力}
+  - {v: img:yang_lee, at: 一九五四年}
+  - {v: anim:gauge_symmetry@0-12, at: 把QED裡}
+  - {v: anim:gauge_symmetry@9-21, at: 這就是楊}
+  - {v: img:princeton_ias, at: 據說楊振寧}
+  - {v: img:pauli, at: 包立就坐在}
+  - {v: img:yang, at: 楊振寧說}
+  - {v: img:bohr_pauli, at: 包立立刻反問}
+  - {v: img:oppenheimer, at: 場面一度}
+  - {v: img:yang_lee, at: 包立確實}
+  - {v: anim:pencil@0-8, at: 但楊振寧的直覺}
+
+s12_higgs:
+  - img:nambu
+  - {v: img:superconductor, at: 從超導的}
+  - {v: anim:mexican_hat@0-8, at: 理論本身有對稱性}
+  - {v: anim:pencil, at: 就像一支鉛筆}
+  - {v: img:higgs, at: 接著希格斯}
+  - {v: anim:mexican_hat@6-18.7, at: 規範玻色子原本}
+  - {v: anim:gauge_symmetry@9-21, at: 楊－米爾斯理論的死穴}
+  - {v: img:weinberg, at: 一九六七年}
+  - {v: img:salam, at: 建立電弱統一}
+  - {v: img:gross, at: 一九七三年}
+  - img:politzer
+  - img:wilczek
+  - {v: anim:standard_model, at: 粒子物理的標準模型}
+  - {v: img:cern_aerial, at: 二零一二年}
+  - {v: img:higgs_event, at: 發現了希格斯}
+  - {v: img:higgs_englert, at: 替這座大廈}
+
+s13_symmetry:
+  - anim:symmetry_logic@0-6
+  - {v: img:newton, at: 牛頓的時代}
+  - {v: anim:symmetry_logic@4-18, at: 在規範場論裡}
+  - {v: img:noether, at: 從諾特定理}
+  - {v: anim:gauge_symmetry@0-10, at: 到規範場論告訴}
+  - {v: img:atlas, at: 場論把對稱性}
+  - {v: img:einstein, at: 難怪有人說}
+  - img:solvay_1927
+  - img:yang
+
+s14_curved:
+  - vid:black_hole@0-10
+  - {v: img:hawking, at: 一九七零年代}
+  - {v: img:unruh_photo, at: 盎魯效應和}
+  - {v: vid:rocket_launch, at: 盎魯效應說}
+  - {v: anim:unruh@0-12, at: 在真空中會看到}
+  - {v: anim:unruh@10-22.5, at: 而慣性觀察者}
+  - {v: img:m87, at: 霍金輻射更有名}
+  - {v: anim:hawking_radiation, at: 它會緩慢地}
+  - {v: img:sgr_a, at: 這兩個效應}
+  - {v: vid:black_hole@12-24, at: 自由下落}
+  - {v: anim:quantum_field@0-12, at: 但場不一樣}
+  - {v: anim:unruh@14-22.5, at: 只是不同的觀察者}
+  - {v: anim:field_ocean@0-10, at: 粒子是場在}
+
+s15_four_reasons:
+  - img:hubble_deep
+  - {v: anim:four_reasons@0-4, at: 因為粒子的圖像}
+  - {v: anim:four_reasons@3-15, at: 第一，}
+  - {v: vid:water_ripples, at: 只有場論，才能}
+  - {v: anim:four_reasons@16-30, at: 第二，}
+  - {v: anim:pair_creation@0-9, at: 單粒子理論}
+  - {v: anim:four_reasons@31-44, at: 第三，}
+  - {v: anim:standard_model@6-19, at: 只有規範場論}
+  - {v: anim:four_reasons@45-58, at: 第四，}
+  - {v: anim:lattice@0-10, at: 就必須引入}
+  - {v: anim:four_reasons@59-69.8, at: 場論是唯一}
+  - {v: img:feynman, at: 不是物理學家}
+
+s16_beyond:
+  - img:hubble_deep
+  - {v: img:bullet_cluster, at: 標準模型再精確}
+  - {v: img:cmb, at: 而它們佔了}
+  - {v: vid:black_hole@14-24, at: 廣義相對論再優美}
+  - {v: vid:milky_way, at: 物理學家正在}
+  - {v: anim:string_modes@0-10, at: 弦論認為}
+  - {v: img:calabi_yau, at: 粒子和場，都是}
+  - {v: vid:superconductor_vid, at: 拓樸量子場論}
+  - {v: img:superconductor, at: 它預言的任意子}
+  - {v: anim:lattice, at: 晶格規範理論}
+  - {v: img:supercomputer, at: 晶格QCD已是}
+
+s17_outro:
+  - vid:earth@0-8
+  - {v: anim:nested_theories@0-12, at: 而是把場論}
+  - {v: img:einstein_1921, at: 就像相對論}
+  - {v: img:newton, at: 只是證明了}
+  - {v: anim:nested_theories@12-25, at: 物理學的發展}
+  - {v: img:newton_1702, at: 從牛頓的超距作用}
+  - {v: img:faraday, at: 到法拉第的力線}
+  - {v: img:maxwell, at: 從馬克士威的電磁波}
+  - {v: anim:spacetime@12-24, at: 到彎曲的時空}
+  - anim:quantum_field@0-10
+  - {v: anim:outro, at: 三百年來}
+  - {v: vid:earth@20-35, at: 那片看似空無}

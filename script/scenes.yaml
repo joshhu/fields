@@ -1,19 +1,10 @@
-# 分場稿：每個 scene 有旁白 (text) 與視覺清單 (visuals)。
-# visual 類型：
-#   anim:<name>    -> assets/anim/<name>.mp4  (Manim / numpy 動畫)
-#   img:<key>      -> assets/img/<key>.*      (Wikimedia Commons 等，附 caption 字卡)
-#   vid:<key>      -> assets/vid/<key>.mp4    (NASA / Commons 公有領域影片)
-# weight 為該視覺在場景中所佔時間比例（預設 1）。
-# 標題字卡 (title) 會在章節開頭顯示。
+# 分場稿：每個 scene 有旁白 (text)、章節標題 (title) 與字卡位置 (card: left/center/none)。
+# 畫面清單在 script/shots.yaml。
 
 scenes:
   - id: s00_intro
     title: "場比粒子更基本"
     subtitle: "物理學三百年的終極轉向"
-    visuals:
-      - anim:title
-      - vid:galaxy
-      - anim:quantum_field
     text: >-
       不知道你有沒有過這種感覺：翻開今天任何一本現代物理教科書，從粒子物理到廣義相對論，
       從凝態物理甚至到金融數學，「場」這個字幾乎無所不在。
@@ -28,11 +19,6 @@ scenes:
 
   - id: s01_newton
     title: "第一章　超距作用的彆扭"
-    visuals:
-      - img:newton
-      - vid:earth_orbit
-      - anim:action_at_distance
-      - img:principia
     text: >-
       萬有引力定律有多好用，不必多說。從蘋果落地到行星公轉，從潮汐漲落到彗星回歸，
       天上地下的現象，一套公式就算得明明白白。
@@ -51,11 +37,6 @@ scenes:
 
   - id: s02_faraday
     title: "第二章　法拉第的力線"
-    visuals:
-      - img:faraday
-      - img:iron_filings
-      - anim:field_lines
-      - img:faraday_lab
     text: >-
       第一個把「空間本身」當一回事的人，是法拉第。
       他沒受過正規的數學教育，完全靠實驗直覺打天下。別人做實驗看現象，他卻能看穿現象背後的物理圖像。
@@ -72,11 +53,6 @@ scenes:
 
   - id: s03_maxwell
     title: "第三章　馬克士威與電磁場"
-    visuals:
-      - img:maxwell
-      - anim:maxwell_eq
-      - anim:em_wave
-      - img:hertz
     text: >-
       把法拉第的直覺變成嚴謹理論的人，是馬克士威。
       他把法拉第腦中模糊的力線圖像，翻譯成精確的微分方程式。
@@ -93,11 +69,6 @@ scenes:
 
   - id: s04_ether
     title: "第四章　以太的消失"
-    visuals:
-      - anim:michelson
-      - img:michelson
-      - img:einstein_1905
-      - vid:sun
     text: >-
       不過還有個遺留問題：電磁波是在什麼介質裡傳播的？
       水波靠水，聲波靠空氣，當時的物理學家理所當然地認為，光也得靠一種介質，他們稱它為「以太」。
@@ -111,11 +82,6 @@ scenes:
 
   - id: s05_gr
     title: "第五章　時空本身就是場"
-    visuals:
-      - img:einstein
-      - anim:spacetime
-      - vid:black_hole
-      - img:eclipse_1919
     text: >-
       如果說馬克士威讓電磁場成為獨立的物理實在，那麼愛因斯坦做得更徹底：他把時空本身也變成了場。
       在牛頓的世界觀裡，時空是一座固定不變的舞台，所有物理事件都在台上發生，舞台本身和演員無關。
@@ -132,11 +98,6 @@ scenes:
 
   - id: s06_rqm
     title: "第六章　量子力學的困境"
-    visuals:
-      - img:schrodinger
-      - anim:negative_energy
-      - img:dirac
-      - img:positron
     text: >-
       你可能會問：量子力學一開始明明是圍繞著「粒子」展開的，為什麼最後也走進了場論？
       這裡有個冷知識。很多人以為克萊因－戈登方程式是薛丁格方程式的相對論推廣，真實的歷史正好相反。
@@ -153,11 +114,6 @@ scenes:
   - id: s07_qft_birth
     title: "第七章　場的量子化"
     card: center
-    visuals:
-      - anim:pair_creation
-      - img:heisenberg
-      - anim:harmonic_modes
-      - img:solvay_1927
     text: >-
       反粒子的發現帶來一個更深刻的問題：粒子可以產生，也可以湮滅。
       電子和正電子相遇會變成光子，光子也能變成電子對。粒子數不守恆，種類也會改變。
@@ -170,11 +126,6 @@ scenes:
 
   - id: s08_field_ocean
     title: "第八章　粒子是場的漣漪"
-    visuals:
-      - anim:field_ocean
-      - anim:quantum_field
-      - img:fermi
-      - anim:beta_decay
     text: >-
       在這個框架裡，圖像徹底反過來了。古典物理中，粒子是基本的，場只是粒子之間的媒介；
       在量子場論裡，場才是最基本的實體。
@@ -189,12 +140,6 @@ scenes:
 
   - id: s09_renorm
     title: "第九章　無窮大與重整化"
-    visuals:
-      - anim:infinity
-      - img:feynman
-      - anim:feynman_diagram
-      - img:tomonaga
-      - img:schwinger
     text: >-
       但量子場論的發展並不順利。一九三零到四零年代，物理學家遇到一個差點毀掉整個理論的問題：無窮大。
       電子和自己的電磁場相互作用的能量，也就是電子自能，算出來是無窮大；
@@ -211,11 +156,6 @@ scenes:
 
   - id: s10_wilson
     title: "第十章　威爾森與有效場論"
-    visuals:
-      - img:wilson
-      - anim:block_spin
-      - anim:rg_flow
-      - anim:nested_theories
     text: >-
       但重整化為什麼有效？很長一段時間沒人說得清楚，直到一九七零年代，肯尼斯．威爾森用重整化群把它講透了。
       威爾森指出，一個量子場論在不同能量尺度下的行為並不一樣，高能量尺度的細節，到了低能量就會被「抹平」。
@@ -231,11 +171,6 @@ scenes:
 
   - id: s11_yang_mills
     title: "第十一章　楊－米爾斯與包立之問"
-    visuals:
-      - img:yang
-      - anim:gauge_symmetry
-      - img:pauli
-      - img:oppenheimer
     text: >-
       QED成功之後，物理學家自然想用同樣的方法描述強作用力和弱作用力。
       但這兩種力都是短程力，照理說傳遞它們的粒子應該很重，而當時的規範場粒子天生質量為零。
@@ -249,12 +184,6 @@ scenes:
 
   - id: s12_higgs
     title: "第十二章　對稱性破缺與標準模型"
-    visuals:
-      - anim:pencil
-      - anim:mexican_hat
-      - img:higgs
-      - vid:lhc
-      - anim:standard_model
     text: >-
       一九六零年代初，南部陽一郎從超導的BCS理論中，提煉出「自發對稱性破缺」的概念：
       理論本身有對稱性，但真空態並不滿足這個對稱性。
@@ -268,10 +197,6 @@ scenes:
 
   - id: s13_symmetry
     title: "第十三章　對稱性決定一切"
-    visuals:
-      - img:noether
-      - anim:symmetry_logic
-      - img:lhc_detector
     text: >-
       到這裡，做物理的方式已經根本反轉。
       牛頓的時代，是先觀察到一種力，再想辦法用方程式描述它。
@@ -282,11 +207,6 @@ scenes:
 
   - id: s14_curved
     title: "第十四章　黑洞邊的粒子"
-    visuals:
-      - img:hawking
-      - anim:hawking_radiation
-      - img:m87
-      - anim:unruh
     text: >-
       還有一個交叉點，進一步證明場比粒子更基本，那就是彎曲時空中的量子場論。
       一九七零年代，物理學家研究把量子場放進彎曲時空會發生什麼，得到兩個驚人的預言：盎魯效應和霍金輻射。
@@ -302,8 +222,6 @@ scenes:
   - id: s15_four_reasons
     title: "第十五章　為什麼是場？"
     card: none
-    visuals:
-      - anim:four_reasons
     text: >-
       現在，我們終於可以回答一開始的問題：物理學為什麼走向場論？
       因為粒子的圖像，在四個層面同時碰壁。
@@ -315,11 +233,6 @@ scenes:
 
   - id: s16_beyond
     title: "第十六章　場論之後"
-    visuals:
-      - img:cmb
-      - anim:string_modes
-      - vid:galaxy
-      - anim:lattice
     text: >-
       當然，場論也不是終點。
       標準模型再精確，也解釋不了暗物質和暗能量，而它們佔了宇宙總能量的百分之九十五。
@@ -331,10 +244,6 @@ scenes:
 
   - id: s17_outro
     title: "尾聲　層層嵌套"
-    visuals:
-      - anim:nested_theories
-      - vid:earth
-      - anim:outro
     text: >-
       不管未來的理論長什麼樣子，有一點幾乎可以肯定：它不會徹底推翻場論，
       而是把場論當作自己的低能量極限包含進去。

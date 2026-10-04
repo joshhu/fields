@@ -24,10 +24,15 @@ def clean_text(text: str) -> str:
     return text
 
 
-def load_scenes(path: Path = ROOT / "script" / "scenes.yaml") -> list[dict]:
+def load_scenes(path: Path = ROOT / "script" / "scenes.yaml",
+                shots: Path = ROOT / "script" / "shots.yaml") -> list[dict]:
+    """Scenes with cleaned narration; visuals come from shots.yaml."""
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    shot_map = yaml.safe_load(shots.read_text(encoding="utf-8")) if shots.exists() else {}
     for s in data["scenes"]:
         s["text"] = clean_text(s["text"])
+        if s["id"] in shot_map:
+            s["visuals"] = shot_map[s["id"]]
     return data["scenes"]
 
 

@@ -35,16 +35,16 @@ def test_scenes_reference_existing_assets():
 
 def test_credits_cover_all_downloaded_media():
     credits = {c["key"] for c in json.loads((ROOT / "assets" / "credits.json").read_text(encoding="utf-8"))}
-    used = {parse_visual(v)[1] for s in load_scenes() for v in s["visuals"] if not v.startswith("anim:")}
+    used = {parse_visual(v)[1] for s in load_scenes() for v in s["visuals"] if parse_visual(v)[0] != "anim"}
     assert used <= credits, used - credits
 
 
 @pytest.mark.skipif(not AUDIO.exists(), reason="TTS not generated")
 def test_plan_matches_audio():
-    from compose import plan_scenes
+    from compose import XF, plan_scenes
     plans = plan_scenes(load_scenes())
     for p in plans:
-        total = sum(c["dur"] for c in p["clips"]) - 0.6 * (len(p["clips"]) - 1)
+        total = sum(c["dur"] for c in p["clips"]) - XF * (len(p["clips"]) - 1)
         assert abs(total - p["duration"]) < 0.05, p["id"]
     assert 1100 < sum(p["duration"] for p in plans) < 1300
 
@@ -59,3 +59,11 @@ def test_final_video_e2e():
     assert 19 * 60 <= float(info["format"]["duration"]) <= 22 * 60
     srt = (ROOT / "output" / "fields.zh-TW.srt").read_text(encoding="utf-8")
     assert srt.count("-->") > 300
+
+
+@pytest.mark.skipif(not AUDIO.exists(), reason="TTS not generated")
+def test_no_shot_too_long():
+    from compose import MAX_SHOT, plan_scenes
+    long_shots = [(p["id"], c["kind"], c["name"], c["shot"]) for p in plan_scenes(load_scenes())
+                  for c in p["clips"] if c["shot"] > MAX_SHOT[c["kind"]]]
+    assert not long_shots, long_shots

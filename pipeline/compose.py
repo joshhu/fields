@@ -17,7 +17,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, str(Path(__file__).parent))
-from timeline import LEAD, TAIL, allocate, parse_visual, pauses, subtitle_chunks  # noqa: E402
+from timeline import (LEAD, TAIL, anchor_time, char_times, parse_item, parse_visual,  # noqa: E402
+                      pauses, plan_cuts, subtitle_chunks)
 from tts import load_scenes  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -27,8 +28,11 @@ CLIPS = BUILD / "clips"
 SCENES = BUILD / "scenes"
 OUTPUT = ROOT / "output"
 W, H, FPS = 1920, 1080, 30
-XF = 0.6           # crossfade between visuals inside a scene
-CREDITS_DUR = 22.0
+XF = 0.5           # crossfade between visuals inside a scene
+# mostly plain dissolves, with an occasional slide for variety
+TRANSITIONS = ["fade", "fade", "smoothleft", "fade", "fade", "smoothup", "fade", "fade", "slideleft", "fade", "circleopen"]
+MAX_SHOT = {"img": 7.5, "vid": 9.5, "anim": 14.0}
+CREDITS_DUR = 30.0
 FONT_B = "C:/Windows/Fonts/msjhbd.ttc"
 FONT_R = "C:/Windows/Fonts/msjh.ttc"
 ACCENT = (79, 195, 247)
@@ -66,6 +70,69 @@ CAPTIONS = {
     "m87": "事件視界望遠鏡拍攝的 M87* 黑洞，2019 年",
     "cmb": "普朗克衛星觀測的宇宙微波背景",
     "lhc_detector": "CERN 大型強子對撞機的偵測器",
+    # second batch
+    "bubble_chamber": "氣泡室裡的粒子軌跡",
+    "superconductor": "超導體上的磁浮",
+    "apple_tree": "伍爾索普莊園的牛頓蘋果樹",
+    "tides": "潮汐漲落",
+    "halley_comet": "哈雷彗星，1986 年",
+    "newton_1702": "牛頓，1702 年肖像",
+    "leibniz": "哥特佛萊德．萊布尼茲（1646–1716）",
+    "ampere": "安德烈－馬里．安培（1775–1836）",
+    "faraday_photo": "晚年的法拉第",
+    "royal_institution": "倫敦皇家研究院",
+    "faraday_ring": "法拉第的電磁感應實驗器材",
+    "maxwell_young": "年輕時的馬克士威",
+    "maxwell_paper": "〈電磁場的動力學理論〉，1865 年",
+    "heaviside": "奧利弗．黑維塞（1850–1925）",
+    "hertz_apparatus": "赫茲的電磁波實驗裝置",
+    "prism": "白光經稜鏡分成光譜",
+    "lightning": "閃電",
+    "antenna": "接收電磁波的天線",
+    "michelson_morley": "邁克生－莫立實驗的干涉儀，1887 年",
+    "morley": "愛德華．莫立（1838–1923）",
+    "annalen_1905": "〈論動體的電動力學〉，1905 年",
+    "einstein_1921": "愛因斯坦，1921 年",
+    "gr_paper": "廣義相對論論文",
+    "eddington": "亞瑟．愛丁頓（1882–1944）",
+    "lensing": "重力透鏡：星系團彎曲了背景星光",
+    "ligo": "LIGO 重力波偵測站",
+    "einstein_old": "晚年的愛因斯坦",
+    "klein": "奧斯卡．克萊因（1894–1977）",
+    "hydrogen_spectrum": "氫原子光譜",
+    "anderson": "卡爾．安德森（1905–1991）",
+    "born": "馬克斯．玻恩（1882–1970）",
+    "jordan": "帕斯庫爾．約爾當（1902–1980）",
+    "ocean_waves": "海面上的浪花",
+    "bethe": "漢斯．貝特（1906–2005）",
+    "shelter_island": "1947 年謝爾特島會議",
+    "feynman_van": "費曼在黑板前，1988 年",
+    "g2_ring": "費米實驗室的 Muon g-2 儲存環",
+    "nobel_medal": "諾貝爾獎章",
+    "critical_opalescence": "臨界點附近的流體出現臨界乳光",
+    "magnetic_domains": "磁性薄膜中的磁區",
+    "princeton_ias": "普林斯頓高等研究院",
+    "yang_lee": "楊振寧與李政道",
+    "bohr_pauli": "包立（中）與狄拉克、派爾斯，約 1953 年",
+    "nambu": "南部陽一郎（1921–2015）",
+    "weinberg": "史蒂文．溫伯格（1933–2021）",
+    "salam": "阿卜杜勒．薩拉姆（1926–1996）",
+    "glashow": "謝爾登．格拉肖（1932 年生）",
+    "gross": "大衛．格羅斯（1941 年生）",
+    "politzer": "大衛．波利策（1949 年生）",
+    "wilczek": "法蘭克．威爾切克（1951 年生）",
+    "higgs_event": "CMS 偵測器記錄的希格斯候選事件",
+    "atlas": "CERN 的 ATLAS 偵測器",
+    "cern_aerial": "大型強子對撞機的位置，日內瓦近郊",
+    "lhc_tunnel": "大型強子對撞機隧道",
+    "higgs_englert": "希格斯與恩格勒，2013 年",
+    "sgr_a": "銀河系中心黑洞人馬座 A*，2022 年",
+    "unruh_photo": "威廉．盎魯（1945 年生）",
+    "bullet_cluster": "子彈星系團：暗物質存在的證據",
+    "planck_satellite": "普朗克衛星",
+    "calabi_yau": "卡拉比－丘流形示意圖",
+    "supercomputer": "用於晶格計算的超級電腦",
+    "hubble_deep": "哈伯超深空影像",
 }
 
 
@@ -77,6 +144,16 @@ CREDIT_LABELS = {
     "black_hole": "影片：雙黑洞重力透鏡模擬",
     "lhc": "影片：同步加速器動畫",
     "earth": "影片：國際太空站拍攝的地球縮時",
+    "newtons_cradle": "影片：牛頓擺",
+    "iron_filings_vid": "影片：鐵屑在磁鐵周圍排列",
+    "water_ripples": "影片：水面漣漪",
+    "cloud_chamber": "影片：雲霧室中的粒子軌跡",
+    "ocean": "影片：空拍海浪",
+    "aurora": "影片：國際太空站拍攝的極光",
+    "superconductor_vid": "影片：超導磁浮",
+    "rocket_launch": "影片：火箭發射",
+    "milky_way": "影片：銀河縮時攝影",
+    "wilson_alt": "紐約諾貝爾紀念碑上的威爾森之名",
     "ambient1": "配樂：Ambient (10 minutes)",
     "ambient2": "配樂：Ambient Seattle 2024",
 }
@@ -84,7 +161,9 @@ CREDIT_LABELS = {
 # fractional crop boxes (l, t, r, b) for images with printed captions etc.
 CROP = {"heisenberg": (0.04, 0.017, 0.966, 0.826)}
 # cap on displayed foreground height (output px) for low-resolution sources
-FG_MAX_H = {"wilson": 620}
+MAX_UPSCALE = 1.7
+VID_ZOOM = {"lhc": 1.25, "earth": 1.2}
+FG_MAX_H = {"wilson": 620, "bethe": 720, "weinberg": 720, "politzer": 620}
 
 
 # ---------------------------------------------------------------- helpers
@@ -122,7 +201,7 @@ def _base_canvas(img: Image.Image, scale: float, max_h: int | None = None) -> Im
     """Image on a 16:9 canvas (scale x output size): cover if near 16:9, else blurred-bg contain."""
     cw, ch = int(W * scale), int(H * scale)
     ar = img.width / img.height
-    if 1.45 <= ar <= 2.1:
+    if 1.45 <= ar <= 2.1 and img.width >= W * 0.8:
         r = max(cw / img.width, ch / img.height)
         im = img.resize((math.ceil(img.width * r), math.ceil(img.height * r)), Image.LANCZOS)
         x, y = (im.width - cw) // 2, (im.height - ch) // 2
@@ -133,6 +212,7 @@ def _base_canvas(img: Image.Image, scale: float, max_h: int | None = None) -> Im
     bg = bg.crop((x, y, x + cw, y + ch)).filter(ImageFilter.GaussianBlur(40 * scale))
     bg = Image.blend(bg, Image.new("RGB", bg.size, (8, 12, 26)), 0.55)
     r = min(cw * 0.86 / img.width, ch * 0.86 / img.height)
+    r = min(r, MAX_UPSCALE * scale)  # never blow small sources up too far
     if max_h:
         r = min(r, max_h * scale / img.height)
     fg = img.resize((int(img.width * r), int(img.height * r)), Image.LANCZOS)
@@ -197,27 +277,29 @@ def render_image_clip(src: Path, dur: float, out: Path, caption: str | None, var
 
 
 # ---------------------------------------------------------------- video / anim clips
-def render_video_clip(src: Path, dur: float, out: Path, kind: str) -> None:
+def render_video_clip(src: Path, dur: float, out: Path, kind: str, segment: list | None = None) -> None:
     length = probe_duration(src)
-    vf = [f"scale={W}:{H}:force_original_aspect_ratio=increase", f"crop={W}:{H}", "setsar=1"]
-    inp = ["-i", str(src)]
+    seg_a = segment[0] if segment else 0.0
+    seg_b = segment[1] if segment and segment[1] else length
+    seg_a, seg_b = min(seg_a, max(length - 1.0, 0.0)), min(seg_b, length)
+    seg_len = max(seg_b - seg_a, 0.5)
+    z = VID_ZOOM.get(src.stem, 1.0)  # punch in to crop corner logos / watermarks
+    crop = f"crop={W}:{H}:iw-{W}:ih-{H}" if z > 1.0 else f"crop={W}:{H}"  # logos sit top-left
+    vf = [f"scale={int(W * z)}:{int(H * z)}:force_original_aspect_ratio=increase", crop, "setsar=1"]
+    inp = ["-ss", f"{seg_a:.3f}", "-i", str(src)]
+    ratio = seg_len / dur
     if kind == "anim":
-        ratio = length / dur
-        if ratio > 1.0:
-            # play the whole animation slightly faster if it is a bit long, else trim
-            if ratio <= 1.35:
-                vf.append(f"setpts=PTS/{ratio:.5f}")
+        if 1.0 < ratio <= 1.35:          # slightly long: play a bit faster
+            vf.append(f"setpts=PTS/{ratio:.5f}")
+        elif 0.8 <= ratio < 1.0:         # slightly short: play a bit slower
+            vf.append(f"setpts=PTS/{ratio:.5f}")
+        elif ratio < 0.8:                # much shorter: slow down and hold last frame
+            vf.append(f"trim=duration={seg_len:.3f},setpts=PTS/0.8,tpad=stop_mode=clone:stop_duration={dur:.3f}")
+    elif ratio < 1.0:
+        if ratio >= 0.7:
+            vf.append(f"setpts=PTS/{ratio:.5f}")
         else:
-            if ratio >= 0.8:
-                vf.append(f"setpts=PTS/{ratio:.5f}")
-            else:
-                vf.append(f"setpts=PTS/0.8,tpad=stop_mode=clone:stop_duration={dur:.3f}")
-    else:
-        if length < dur:
-            if length / dur >= 0.7:
-                vf.append(f"setpts=PTS/{length / dur:.5f}")
-            else:
-                inp = ["-stream_loop", "-1", "-i", str(src)]
+            inp = ["-stream_loop", "-1", *inp]
     vf.append(f"fps={FPS}")
     run(["ffmpeg", "-v", "error", "-y", *inp, "-t", f"{dur:.3f}", "-an", "-vf", ",".join(vf), *ENC, str(out)])
 
@@ -237,7 +319,7 @@ def render_clip(job: dict) -> str:
     sig = json.dumps(job, sort_keys=True)
     sig_file = out.with_suffix(".sig")
     src = find_asset(kind, name)
-    sig += str(src.stat().st_mtime if src else "missing")
+    sig += str(src.stat().st_mtime if src else "missing") + str(VID_ZOOM.get(name))
     if out.exists() and sig_file.exists() and sig_file.read_text(encoding="utf-8") == sig:
         return f"cached {out.name}"
     if src is None:
@@ -245,7 +327,7 @@ def render_clip(job: dict) -> str:
     elif kind == "img":
         render_image_clip(src, dur, out, CAPTIONS.get(name), job["variant"])
     else:
-        render_video_clip(src, dur, out, kind)
+        render_video_clip(src, dur, out, kind, job.get("segment"))
     sig_file.write_text(sig, encoding="utf-8")
     return f"rendered {out.name}" + ("" if src else " (PLACEHOLDER)")
 
@@ -274,7 +356,8 @@ def build_scene(scene: dict, plan: dict) -> Path:
     last = "[0:v]"
     for k in range(1, n):
         lbl = f"[x{k}]"
-        filt.append(f"{last}[{k}:v]xfade=transition=fade:duration={XF}:offset={clips[k]['start']:.3f}{lbl}")
+        tr = TRANSITIONS[(k * 7 + len(scene["id"])) % len(TRANSITIONS)]
+        filt.append(f"{last}[{k}:v]xfade=transition={tr}:duration={XF}:offset={clips[k]['start']:.3f}{lbl}")
         last = lbl
     idx = n
     if scene.get("title") and scene["id"] != "s00_intro" and scene.get("card") != "none":
@@ -309,27 +392,41 @@ def build_credits(out: Path) -> None:
                                            ("動畫製作　Manim Community Edition", 34, (176, 190, 197)),
                                            ("", 30, (0, 0, 0)), ("素材來源", 44, ACCENT)]
     used = {name for s in load_scenes() for v in s["visuals"] for kind, name, _ in [parse_visual(v)] if kind != "anim"}
+    entries = []
     for it in items:
         if it.get("kind") in ("img", "vid", "image", "video") and it.get("key") not in used:
             continue
         author = (it.get("author") or "").strip()
-        if len(author) > 70:
-            author = author[:67].rsplit(" ", 1)[0] + " 等"
+        if len(author) > 46:
+            author = author[:43].rsplit(" ", 1)[0] + " 等"
         lic = (it.get("license") or "").strip()
         key = it.get("key", "")
         title = CREDIT_LABELS.get(key) or CAPTIONS.get(key) or (it.get("title") or key).strip()
-        if len(title) > 60:
-            title = title[:57] + "…"
-        lines.append((title, 28, (236, 239, 241)))
-        lines.append((f"{author}　｜　{lic}" if author else lic, 24, (144, 164, 174)))
-    lines += [("", 40, (0, 0, 0)), ("感謝收看", 56, (236, 239, 241))]
-    heights = [int(s * 1.7) for _, s, _ in lines]
-    tall = Image.new("RGB", (W, sum(heights) + H * 2), (11, 16, 32))
+        if len(title) > 40:
+            title = title[:38] + "…"
+        entries.append((title, f"{author}　｜　{lic}" if author else lic))
+    head_h = [int(s * 1.7) for _, s, _ in lines]
+    row_h = 80
+    half = (len(entries) + 1) // 2
+    tail = [("", 40, (0, 0, 0)), ("感謝收看", 56, (236, 239, 241))]
+    tail_h = [int(s * 1.7) for _, s, _ in tail]
+    tall = Image.new("RGB", (W, sum(head_h) + half * row_h + sum(tail_h) + H * 2), (11, 16, 32))
     d = ImageDraw.Draw(tall)
     y = H
-    for (txt, size, col), h in zip(lines, heights):
+    for (txt, size, col), h in zip(lines, head_h):
         if txt:
             d.text((W // 2, y), txt, font=font(FONT_B if size >= 34 else FONT_R, size), fill=col, anchor="mt")
+        y += h
+    f_t, f_a = font(FONT_R, 27), font(FONT_R, 21)
+    for i, (title, sub) in enumerate(entries):
+        col_x = W // 4 + 40 if i < half else 3 * W // 4 - 40
+        yy = y + (i % half) * row_h
+        d.text((col_x, yy), title, font=f_t, fill=(236, 239, 241), anchor="mt")
+        d.text((col_x, yy + 36), sub, font=f_a, fill=(144, 164, 174), anchor="mt")
+    y += half * row_h
+    for (txt, size, col), h in zip(tail, tail_h):
+        if txt:
+            d.text((W // 2, y), txt, font=font(FONT_B, size), fill=col, anchor="mt")
         y += h
     n = int(CREDITS_DUR * FPS)
     travel = tall.height - H
@@ -385,15 +482,27 @@ def plan_scenes(scenes: list[dict]) -> list[dict]:
         meta = json.loads((BUILD / "audio" / f"{s['id']}.json").read_text(encoding="utf-8"))
         audio = probe_duration(BUILD / "audio" / f"{s['id']}.mp3")
         D = LEAD + audio + TAIL
-        vis = [parse_visual(v) for v in s["visuals"]]
+        items = [parse_item(v) for v in s["visuals"]]
+        times = char_times(meta["text"], meta["words"])
+        anchors, pos = [], 0
+        for it in items:
+            at = None
+            if it["at"]:
+                r = anchor_time(meta["text"], times, it["at"], pos)
+                if r is None:
+                    print(f"WARN anchor not found in {s['id']}: {it['at']}", file=sys.stderr)
+                else:
+                    at, pos = LEAD + r[0] - 0.15, r[1]
+            anchors.append(at)
         snaps = [p + LEAD for p in pauses(meta["words"])]
-        durs = allocate(D, [w for _, _, w in vis], snaps)
+        durs = plan_cuts(D, [it["weight"] for it in items], anchors, snaps)
         clips, start = [], 0.0
-        for i, ((kind, name, _), d) in enumerate(zip(vis, durs)):
-            clen = d + (XF if i < len(vis) - 1 else 0.0)
-            clips.append({"kind": kind, "name": name, "dur": round(clen, 3), "start": round(start, 3),
-                          "variant": (len(plans) + i) % 4,
-                          "out": str(CLIPS / f"{s['id']}_{i}_{kind}_{name}.mp4")})
+        for i, (it, d) in enumerate(zip(items, durs)):
+            clen = d + (XF if i < len(items) - 1 else 0.0)
+            seg = list(it["segment"]) if it["segment"] else None
+            clips.append({"kind": it["kind"], "name": it["name"], "dur": round(clen, 3), "start": round(start, 3),
+                          "shot": round(d, 2), "variant": (len(plans) + i) % 4, "segment": seg,
+                          "out": str(CLIPS / f"{s['id']}_{i:02d}_{it['kind']}_{it['name']}.mp4")})
             start += d
         plans.append({"id": s["id"], "t0": t0, "duration": D, "clips": clips, "words": meta["words"],
                       "text": meta["text"]})
@@ -401,19 +510,40 @@ def plan_scenes(scenes: list[dict]) -> list[dict]:
     return plans
 
 
+def report(plans: list[dict]) -> int:
+    """Print the shot list; return number of shots longer than MAX_SHOT."""
+    bad = 0
+    for p in plans:
+        print(f"== {p['id']}  {p['duration']:.1f}s  {len(p['clips'])} shots")
+        for c in p["clips"]:
+            flag = ""
+            if c["shot"] > MAX_SHOT[c["kind"]]:
+                flag, bad = "  <-- TOO LONG", bad + 1
+            if not find_asset(c["kind"], c["name"]):
+                flag += "  (missing)"
+            print(f"   {p['t0'] + c['start']:7.1f}  {c['shot']:5.1f}s  {c['kind']}:{c['name']}{flag}")
+    n = sum(len(p["clips"]) for p in plans)
+    print(f"total shots {n}, too long {bad}")
+    return bad
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", help="build only this scene id (no final mux)")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--plan", action="store_true", help="print the shot list and exit")
     args = ap.parse_args()
     for d in (CLIPS, SCENES, BUILD / "cards", BUILD / "audio_scene", OUTPUT):
         d.mkdir(parents=True, exist_ok=True)
 
     scenes = load_scenes()
     plans = plan_scenes(scenes)
+    if args.plan:
+        report(plans)
+        return
     todo = [p for p in plans if not args.only or p["id"] == args.only]
 
-    jobs = [{k: c[k] for k in ("kind", "name", "dur", "variant", "out")} for p in todo for c in p["clips"]]
+    jobs = [{k: c[k] for k in ("kind", "name", "dur", "variant", "out", "segment")} for p in todo for c in p["clips"]]
     with ProcessPoolExecutor(max_workers=args.workers) as ex:
         for msg in ex.map(render_clip, jobs):
             print(msg, flush=True)
